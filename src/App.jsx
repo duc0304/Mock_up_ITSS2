@@ -3,6 +3,7 @@ import './App.css'
 import Home from './pages/Home'
 import Forum from './pages/Forum'
 import Library from './pages/Library'
+import PostDetail from './pages/PostDetail'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/forum" element={<Forum />} />
+            <Route path="/forum/:postId" element={<PostDetail />} />
             <Route path="/library" element={<Library />} />
           </Routes>
         </main>

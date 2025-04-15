@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Forum = () => {
   // Mock data cho các bài đăng diễn đàn
@@ -49,11 +50,13 @@ const Forum = () => {
     }
   ]
 
+  const navigate = useNavigate()
   const [posts, setPosts] = useState(initialPosts)
   const [newPost, setNewPost] = useState({ title: '', content: '', tags: '' })
   const [activePost, setActivePost] = useState(null)
   const [newReply, setNewReply] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [showNewPostForm, setShowNewPostForm] = useState(false)
 
   // Các danh mục
   const categories = [
@@ -93,6 +96,7 @@ const Forum = () => {
 
     setPosts([post, ...posts])
     setNewPost({ title: '', content: '', tags: '' })
+    setShowNewPostForm(false) // Ẩn form sau khi đăng bài
   }
 
   // Xử lý gửi trả lời
@@ -118,8 +122,18 @@ const Forum = () => {
     setNewReply('')
   }
 
+  // Chuyển đến trang chi tiết bài viết
+  const navigateToPostDetail = (postId) => {
+    // Trong thực tế sẽ chuyển đến URL /forum/postId
+    // Hiện tại ta giả lập lưu post đang xem vào localStorage
+    localStorage.setItem('currentPost', JSON.stringify(posts.find(p => p.id === postId)))
+    navigate(`/forum/${postId}`)
+  }
+
   // Xử lý upvote cho bài đăng
-  const handlePostUpvote = (postId) => {
+  const handlePostUpvote = (e, postId) => {
+    e.stopPropagation() // Ngăn sự kiện click lan tỏa tới parent element
+    
     const updatedPosts = posts.map(post => {
       if (post.id === postId) {
         return { ...post, upvotes: post.upvotes + 1 }
@@ -188,43 +202,58 @@ const Forum = () => {
 
         {/* Main content */}
         <div className="forum-main">
-          {/* Form đăng bài mới */}
-          <div className="card create-post">
-            <h2 className="card-title">Tạo bài đăng mới</h2>
-            <form onSubmit={handleSubmitPost}>
-              <div className="form-group">
-                <label className="form-label">Tiêu đề</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={newPost.title}
-                  onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-                  placeholder="Nhập tiêu đề bài viết"
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Nội dung</label>
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  value={newPost.content}
-                  onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
-                  placeholder="Nhập nội dung bài viết"
-                ></textarea>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Tags (phân cách bằng dấu phẩy)</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={newPost.tags}
-                  onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
-                  placeholder="Ví dụ: reactjs, hooks, javascript"
-                />
-              </div>
-              <button type="submit" className="btn btn-primary">Đăng bài</button>
-            </form>
+          {/* Button tạo bài đăng mới */}
+          <div className="new-post-button-container">
+            <button 
+              className="btn btn-primary new-post-button" 
+              onClick={() => setShowNewPostForm(!showNewPostForm)}
+            >
+              {showNewPostForm ? 'Hủy' : '✏️ Tạo bài đăng mới'}
+            </button>
           </div>
+
+          {/* Form đăng bài mới */}
+          {showNewPostForm && (
+            <div className="card create-post">
+              <h2 className="card-title">Tạo bài đăng mới</h2>
+              <form onSubmit={handleSubmitPost}>
+                <div className="form-group">
+                  <label className="form-label">Tiêu đề</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newPost.title}
+                    onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                    placeholder="Nhập tiêu đề bài viết"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Nội dung</label>
+                  <textarea
+                    className="form-control"
+                    rows="4"
+                    value={newPost.content}
+                    onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+                    placeholder="Nhập nội dung bài viết"
+                  ></textarea>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Tags (phân cách bằng dấu phẩy)</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={newPost.tags}
+                    onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
+                    placeholder="Ví dụ: reactjs, hooks, javascript"
+                  />
+                </div>
+                <div className="form-actions">
+                  <button type="button" className="btn btn-secondary" onClick={() => setShowNewPostForm(false)}>Hủy</button>
+                  <button type="submit" className="btn btn-primary">Đăng bài</button>
+                </div>
+              </form>
+            </div>
+          )}
 
           {/* Danh sách bài đăng */}
           <div className="forum-posts">
@@ -238,100 +267,70 @@ const Forum = () => {
                 <p>Không có bài viết nào trong danh mục này. Hãy là người đầu tiên đăng bài!</p>
               </div>
             ) : (
-              filteredPosts.map((post) => (
-                <div className="post-card" key={post.id}>
-                  <div className="post-header">
-                    <div className="post-meta-primary">
-                      <div className="post-author-info">
-                        <div className="author-avatar">{post.avatar}</div>
-                        <span className="post-author">{post.username}</span>
-                      </div>
-                      <span className="post-time">{post.timestamp}</span>
-                    </div>
-                    <h3 className="post-title">{post.title}</h3>
-                  </div>
-                  
-                  <div className="post-content">{post.content}</div>
-                  
-                  <div className="post-footer">
-                    <div className="post-meta-secondary">
-                      <div className="post-category">{post.category}</div>
-                      <div className="post-tags">
-                        {post.tags.map((tag, index) => (
-                          <span key={index} className="tag">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="post-actions">
-                      <button 
-                        className="btn btn-upvote" 
-                        onClick={() => handlePostUpvote(post.id)}
+              <div className="posts-list-view">
+                <table className="posts-table">
+                  <thead>
+                    <tr>
+                      <th className="post-title-header">Tiêu đề</th>
+                      <th className="post-author-header">Tác giả</th>
+                      <th className="post-category-header">Danh mục</th>
+                      <th className="post-stats-header">Thống kê</th>
+                      <th className="post-date-header">Ngày đăng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredPosts.map((post) => (
+                      <tr 
+                        key={post.id} 
+                        className="post-row"
+                        onClick={() => navigateToPostDetail(post.id)}
                       >
-                        <span className="upvote-icon">▲</span> {post.upvotes}
-                      </button>
-                      <button 
-                        className="btn btn-comment"
-                        onClick={() => setActivePost(activePost === post.id ? null : post.id)}
-                      >
-                        <span className="comment-icon">💬</span>
-                        {activePost === post.id ? 'Ẩn bình luận' : `Xem bình luận (${post.replies.length})`}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Phần bình luận */}
-                  {activePost === post.id && (
-                    <div className="post-replies">
-                      <h4 className="replies-heading">Bình luận ({post.replies.length})</h4>
-                      
-                      {post.replies.length > 0 ? (
-                        <div className="replies-list">
-                          {post.replies.map((reply) => (
-                            <div className="reply" key={reply.id}>
-                              <div className="reply-header">
-                                <div className="reply-author-info">
-                                  <div className="author-avatar">{reply.avatar}</div>
-                                  <span className="reply-author">{reply.username}</span>
-                                </div>
-                                <span className="reply-time">{reply.timestamp}</span>
-                              </div>
-                              <p className="reply-content">{reply.content}</p>
-                              <div className="reply-actions">
-                                <button 
-                                  className="btn btn-sm btn-upvote"
-                                  onClick={() => handleReplyUpvote(post.id, reply.id)}
-                                >
-                                  <span className="upvote-icon">▲</span> {reply.upvotes}
-                                </button>
-                              </div>
+                        <td className="post-title-cell">
+                          <div className="post-title">{post.title}</div>
+                          {post.tags.length > 0 && (
+                            <div className="post-tags-inline">
+                              {post.tags.slice(0, 2).map((tag, index) => (
+                                <span key={index} className="tag-inline">{tag}</span>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="no-replies">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>
-                      )}
-
-                      {/* Form trả lời */}
-                      <div className="reply-form">
-                        <textarea
-                          className="form-control"
-                          value={newReply}
-                          onChange={(e) => setNewReply(e.target.value)}
-                          placeholder="Nhập bình luận của bạn"
-                          rows="3"
-                        ></textarea>
-                        <button 
-                          className="btn btn-primary"
-                          onClick={() => handleSubmitReply(post.id)}
-                        >
-                          Gửi bình luận
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))
+                          )}
+                        </td>
+                        <td className="post-author-cell">
+                          <div className="post-author-wrapper">
+                            <span className="author-avatar-small">{post.avatar}</span>
+                            <span className="post-author">{post.username}</span>
+                          </div>
+                        </td>
+                        <td className="post-category-cell">
+                          <span className="post-category-badge">{post.category}</span>
+                        </td>
+                        <td className="post-stats-cell">
+                          <div className="post-stats">
+                            <div className="stat">
+                              <span className="stat-icon">👍</span>
+                              <span className="stat-count">{post.upvotes}</span>
+                              <button 
+                                className="vote-btn" 
+                                onClick={(e) => handlePostUpvote(e, post.id)}
+                                title="Upvote"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="stat">
+                              <span className="stat-icon">💬</span>
+                              <span className="stat-count">{post.replies.length}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="post-date-cell">
+                          <span className="post-date">{post.timestamp.split(' ')[0]}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         </div>
