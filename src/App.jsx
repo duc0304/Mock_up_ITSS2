@@ -5,6 +5,9 @@ import Forum from './pages/Forum'
 import Library from './pages/Library'
 import PostDetail from './pages/PostDetail'
 
+// ✅ Import SpeedInsights
+import { SpeedInsights } from '@vercel/speed-insights/react';
+
 function App() {
   return (
     <Router>
@@ -30,6 +33,9 @@ function App() {
         <footer className="app-footer">
           <p>© 2023 - Diễn đàn và Kho Tài liệu</p>
         </footer>
+
+        {/* ✅ Thêm SpeedInsights ở đây */}
+        <SpeedInsights />
       </div>
     </Router>
   )
