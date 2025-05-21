@@ -1,0 +1,76 @@
+.forum-sidebar {
+    width: 270px;
+    min-height: 100vh;
+    padding: 1.1rem 1.1rem 1.1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background: #fff;
+    color: #2c3e50;
+    border-right: none;
+    border-radius: 12px;
+    border: 2px solid #e8f0fe;
+    font-family: inherit;
+  }
+  .sidebar-block {
+    margin-bottom: 1.2rem;
+  }
+  .sidebar-menu .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    color: #4a6fa5;
+    font-family: inherit;
+  }
+  .sidebar-menu .menu-item.active,
+  .sidebar-menu .menu-item:hover {
+    background: #e8f0fe;
+    color: #1a73e8;
+  }
+  .sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.7rem;
+    color: #1a73e8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+  }
+  .pinned-title {
+    color: #2c3e50;
+    justify-content: space-between;
+  }
+  .sidebar-tags {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .tag-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #f7f9fc;
+    color: #4a6fa5;
+    border-radius: 6px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.97rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-family: inherit;
+  }
+  .tag-item:hover {
+    background: #e8f0fe;
+    color: #1a73e8;
+  }
+  .tag-count {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #1a73e8;
+    font-weight: 600;
+  }

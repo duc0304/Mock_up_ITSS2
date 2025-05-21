@@ -1,0 +1,146 @@
+.forum-right-sidebar {
+  width: 280px;
+  padding: 1.1rem 1.1rem 1.1rem 1.1rem;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #e8f0fe;
+  box-shadow: 0 2px 12px #e8f0fe;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-section {
+  background: #f7f9fc;
+  border-radius: 12px;
+  padding: 1.1rem 1rem 1rem 1rem;
+  margin-bottom: 0;
+  box-shadow: 0 1px 4px #e8f0fe;
+  border: 1.5px solid #e8f0fe;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.sidebar-section h3 {
+  color: #1a73e8;
+  font-size: 1.13rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #e8f0fe;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: inherit;
+  font-weight: 700;
+}
+
+.contributors-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.contributors-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #e8f0fe;
+  color: #2c3e50;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.contributors-list li:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  width: 28px;
+  height: 28px;
+  background-color: #e8f0fe;
+  color: #1a73e8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1a73e8;
+  margin-right: 0.5rem;
+  background: #fff;
+}
+
+.name {
+  flex: 1;
+  color: #2c3e50;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+.points {
+  color: #5f6368;
+  font-size: 0.97rem;
+  font-family: inherit;
+  font-weight: 500;
+}
+
+.active-groups {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.active-groups li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid #e8f0fe;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #2c3e50;
+  font-family: inherit;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+
+.active-groups li:last-child {
+  border-bottom: none;
+}
+
+.active-groups li:hover {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.group-name {
+  color: #1a73e8;
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.member-count {
+  color: #5f6368;
+  font-size: 0.97rem;
+  background-color: #f0f4f9;
+  padding: 0.2rem 0.7rem;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 500;
+}
