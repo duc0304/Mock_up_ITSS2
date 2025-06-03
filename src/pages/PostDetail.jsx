@@ -1,95 +1,66 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { postService } from '../services/postService'
+import { commentService } from '../services/commentService'
 
 const PostDetail = () => {
   const { postId } = useParams()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
+  const [comments, setComments] = useState([])
   const [newReply, setNewReply] = useState('')
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   
   useEffect(() => {
-    // Trong thực tế sẽ fetch dữ liệu từ API
-    // Hiện tại ta giả lập lấy dữ liệu từ localStorage
-    const loadPost = () => {
-      try {
-        const postData = JSON.parse(localStorage.getItem('currentPost'))
-        if (postData && postData.id.toString() === postId) {
-          setPost(postData)
-        } else {
-          // Nếu không tìm thấy bài viết, chuyển về trang diễn đàn
-          navigate('/forum')
-        }
-      } catch (error) {
-        console.error('Error loading post:', error)
-        navigate('/forum')
-      } finally {
-        setLoading(false)
-      }
+    loadPostAndComments()
+  }, [postId])
+  
+  const loadPostAndComments = async () => {
+    try {
+      setLoading(true)
+      const [postData, commentsData] = await Promise.all([
+        postService.getPostById(postId),
+        commentService.getCommentsByPostId(postId)
+      ])
+      setPost(postData)
+      setComments(commentsData)
+    } catch (err) {
+      setError('Không thể tải bài viết')
+      console.error('Lỗi khi tải bài viết:', err)
+    } finally {
+      setLoading(false)
     }
-    
-    loadPost()
-  }, [postId, navigate])
+  }
   
   const handleBackToForum = () => {
     navigate('/forum')
   }
   
-  // Xử lý gửi trả lời
-  const handleSubmitReply = () => {
+  const handleSubmitReply = async () => {
     if (!newReply) return
     
-    const newReplyObj = {
-      id: post.replies.length + 1,
-      username: 'current_user',
-      avatar: '👤',
-      content: newReply,
-      timestamp: new Date().toLocaleString(),
-      upvotes: 0
-    }
-    
-    const updatedPost = {
-      ...post,
-      replies: [...post.replies, newReplyObj]
-    }
-    
-    // Cập nhật state và localStorage
-    setPost(updatedPost)
-    localStorage.setItem('currentPost', JSON.stringify(updatedPost))
-    setNewReply('')
-  }
-  
-  // Xử lý upvote cho bài đăng
-  const handlePostUpvote = () => {
-    const updatedPost = {
-      ...post,
-      upvotes: post.upvotes + 1
-    }
-    
-    setPost(updatedPost)
-    localStorage.setItem('currentPost', JSON.stringify(updatedPost))
-  }
-  
-  // Xử lý upvote cho bình luận
-  const handleReplyUpvote = (replyId) => {
-    const updatedReplies = post.replies.map(reply => {
-      if (reply.id === replyId) {
-        return { ...reply, upvotes: reply.upvotes + 1 }
+    try {
+      const commentData = {
+        post_id: postId,
+        user_id: 1, // Tạm thời hardcode user_id
+        content: newReply
       }
-      return reply
-    })
-    
-    const updatedPost = {
-      ...post,
-      replies: updatedReplies
+      
+      const newComment = await commentService.createComment(commentData)
+      setComments([...comments, newComment])
+      setNewReply('')
+    } catch (err) {
+      console.error('Lỗi khi gửi bình luận:', err)
     }
-    
-    setPost(updatedPost)
-    localStorage.setItem('currentPost', JSON.stringify(updatedPost))
   }
   
   if (loading) {
     return <div className="loading">Đang tải...</div>
+  }
+  
+  if (error) {
+    return <div className="error">{error}</div>
   }
   
   if (!post) {
@@ -110,10 +81,10 @@ const PostDetail = () => {
       <div className="post-detail-card">
         <div className="post-detail-meta">
           <div className="post-author-info">
-            <div className="author-avatar">{post.avatar}</div>
+            <div className="author-avatar">{post.avatar_url}</div>
             <div className="author-details">
               <span className="post-author">{post.username}</span>
-              <span className="post-time">{post.timestamp}</span>
+              <span className="post-time">{new Date(post.created_at).toLocaleString()}</span>
             </div>
           </div>
           
@@ -122,7 +93,6 @@ const PostDetail = () => {
             <div className="post-actions">
               <button 
                 className="btn btn-upvote" 
-                onClick={handlePostUpvote}
               >
                 <span className="upvote-icon">▲</span> {post.upvotes}
               </button>
@@ -144,29 +114,25 @@ const PostDetail = () => {
         
         <div className="post-detail-replies">
           <h2 className="replies-heading">
-            Bình luận ({post.replies.length})
+            Bình luận ({comments.length})
           </h2>
           
-          {post.replies.length > 0 ? (
+          {comments.length > 0 ? (
             <div className="replies-list">
-              {post.replies.map((reply) => (
-                <div className="reply" key={reply.id}>
+              {comments.map((comment) => (
+                <div className="reply" key={comment.id}>
                   <div className="reply-header">
                     <div className="reply-author-info">
-                      <div className="author-avatar">{reply.avatar}</div>
+                      <div className="author-avatar">{comment.avatar_url}</div>
                       <div className="reply-author-details">
-                        <span className="reply-author">{reply.username}</span>
-                        <span className="reply-time">{reply.timestamp}</span>
+                        <span className="reply-author">{comment.username}</span>
+                        <span className="reply-time">
+                          {new Date(comment.created_at).toLocaleString()}
+                        </span>
                       </div>
                     </div>
-                    <button 
-                      className="btn btn-sm btn-upvote"
-                      onClick={() => handleReplyUpvote(reply.id)}
-                    >
-                      <span className="upvote-icon">▲</span> {reply.upvotes}
-                    </button>
                   </div>
-                  <p className="reply-content">{reply.content}</p>
+                  <p className="reply-content">{comment.content}</p>
                 </div>
               ))}
             </div>

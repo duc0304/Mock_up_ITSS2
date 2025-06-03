@@ -1,25 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaFire, FaClock, FaUserFriends, FaHashtag, FaThumbtack, FaChevronRight } from 'react-icons/fa';
+import { tagService } from '../../services/tagService';
 import './ForumSidebar.css';
 
-const tags = [
-  { name: 'javascript', count: 2452 },
-  { name: 'bitcoin', count: 1930 },
-  { name: 'design', count: 1821 },
-  { name: 'innovation', count: 1520 },
-  { name: 'editorial', count: 1345 },
-  { name: 'business', count: 1295 },
-];
-
-const pinnedGroups = [
-  { name: 'javascript', count: 2452 },
-  { name: 'bitcoin', count: 1930 },
-  { name: 'design', count: 1821 },
-  { name: 'blogging', count: 1520 },
-  { name: 'tutorial', count: 1345 },
-];
-
 export default function ForumSidebar() {
+  const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    loadTags();
+  }, []);
+
+  const loadTags = async () => {
+    try {
+      setLoading(true);
+      const data = await tagService.getAllTags();
+      setTags(data);
+    } catch (err) {
+      setError('Không thể tải tags');
+      console.error('Lỗi khi tải tags:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div>Đang tải...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <aside className="forum-sidebar">
       <div className="sidebar-block">
@@ -33,21 +41,8 @@ export default function ForumSidebar() {
         <div className="sidebar-title">Popular Tags</div>
         <div className="sidebar-tags">
           {tags.map(tag => (
-            <div className="tag-item" key={tag.name}>
+            <div className="tag-item" key={tag.id}>
               <FaHashtag /> {tag.name}
-              <span className="tag-count">{tag.count}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="sidebar-block">
-        <div className="sidebar-title pinned-title">
-          Pinned Group <FaChevronRight />
-        </div>
-        <div className="sidebar-tags">
-          {pinnedGroups.map(tag => (
-            <div className="tag-item" key={tag.name}>
-              <FaThumbtack /> {tag.name}
               <span className="tag-count">{tag.count}</span>
             </div>
           ))}

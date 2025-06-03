@@ -1,43 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaTrophy, FaUsers } from 'react-icons/fa';
+import { groupService } from '../../services/groupService';
 import './ForumRightSidebar.css';
 
 const ForumRightSidebar = () => {
-  const topContributors = [
-    { name: 'Nguyễn Văn A', points: 1500, avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
-    { name: 'Trần Thị B', points: 1200, avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
-    { name: 'Lê Văn C', points: 1000, avatar: 'https://randomuser.me/api/portraits/men/65.jpg' }
-  ];
+  const [groups, setGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const activeGroups = [
-    { name: 'React Developers', members: 150 },
-    { name: 'JavaScript Enthusiasts', members: 200 },
-    { name: 'Web Design', members: 100 }
-  ];
+  useEffect(() => {
+    loadGroups();
+  }, []);
+
+  const loadGroups = async () => {
+    try {
+      setLoading(true);
+      const data = await groupService.getAllGroups();
+      setGroups(data);
+    } catch (err) {
+      setError('Không thể tải nhóm');
+      console.error('Lỗi khi tải nhóm:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <div>Đang tải...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <div className="forum-right-sidebar">
       <div className="sidebar-section">
-        <h3><FaTrophy /> Top Contributors</h3>
-        <ul className="contributors-list">
-          {topContributors.map((contributor, index) => (
-            <li key={index}>
-              <span className="rank">{index + 1}</span>
-              <img src={contributor.avatar} alt="avatar" className="avatar" />
-              <span className="name">{contributor.name}</span>
-              <span className="points">{contributor.points} pts</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="sidebar-section">
         <h3><FaUsers /> Nhóm đang hoạt động</h3>
         <ul className="active-groups">
-          {activeGroups.map((group, index) => (
-            <li key={index}>
+          {groups.map((group) => (
+            <li key={group.id}>
               <span className="group-name">{group.name}</span>
-              <span className="member-count">{group.members} thành viên</span>
+              <span className="member-count">{group.member_count} thành viên</span>
             </li>
           ))}
         </ul>

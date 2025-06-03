@@ -1,0 +1,1 @@
+export const API_URL = 'https://itss2be-production.up.railway.app/api'; 
