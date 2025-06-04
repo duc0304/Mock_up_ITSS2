@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaSearch, FaBell, FaUser, FaComments } from 'react-icons/fa';
 import './ForumHeader.css';
 
-const ForumHeader = () => {
+const ForumHeader = ({ onSearch }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() && onSearch) {
+      onSearch(searchQuery.trim());
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit(e);
+    }
+  };
+
   return (
     <div className="forum-header">
       <div className="header-left">
@@ -10,10 +25,16 @@ const ForumHeader = () => {
         <h1>ITSS Forum</h1>
       </div>
       <div className="header-center">
-        <div className="search-container">
+        <form className="search-container" onSubmit={handleSearchSubmit}>
           <FaSearch className="search-icon" />
-          <input type="text" placeholder="Tìm kiếm bài viết..." />
-        </div>
+          <input 
+            type="text" 
+            placeholder="Tìm kiếm bài viết..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
+        </form>
       </div>
       <div className="header-right">
         <FaBell className="header-icon" />

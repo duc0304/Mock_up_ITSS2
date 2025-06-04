@@ -14,7 +14,7 @@ function App() {
           <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/" element={<Forum />} />
-            <Route path="/forum/:postId" element={<PostDetail />} />
+            <Route path="/post/:postId" element={<PostDetail />} />
             <Route path="/library" element={<Library />} />
           </Routes>
         </main>
