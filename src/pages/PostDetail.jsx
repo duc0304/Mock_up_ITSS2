@@ -107,13 +107,6 @@ const PostDetail = () => {
             
             <div className="post-category-info">
               <span className="post-category">{post.category}</span>
-              <div className="post-actions">
-                <button 
-                  className="btn btn-upvote" 
-                >
-                  <span className="upvote-icon">❤️</span> {post.upvotes}
-                </button>
-              </div>
             </div>
           </div>
           
