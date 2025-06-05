@@ -46,19 +46,19 @@ export default function ForumSidebar({ activeFilter, onFilterChange, onTagSelect
             className={`menu-item ${activeFilter === 'newest' ? 'active' : ''}`}
             onClick={() => onFilterChange('newest')}
           >
-            <FaClock /> Newest and Recent
+            <FaClock /> Bài viết mới nhất
           </div>
           <div 
             className={`menu-item ${activeFilter === 'favourite' ? 'active' : ''}`}
             onClick={() => onFilterChange('favourite')}
           >
-            <FaHeart /> Favourite
+            <FaHeart /> Bài viết yêu thích
           </div>
         </div>
       </div>
       
       <div className="sidebar-block">
-        <div className="sidebar-title">Popular Tags</div>
+        <div className="sidebar-title">Tags phổ biến</div>
         <div className="sidebar-tags">
           {tags.map(tag => (
             <div 
